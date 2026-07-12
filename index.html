@@ -88,9 +88,6 @@
     .card .content{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 0;}
     .card.open .content{padding-top:8px;max-height:2000px;transition:max-height .36s cubic-bezier(.2,.9,.3,1);}
 
-    /* CTA flottante */
-    .cta-fixed{position:fixed;right:18px;bottom:18px;background:var(--gold);color:#08202a;padding:12px 16px;border-radius:999px;font-weight:800;box-shadow:0 8px 26px rgba(12,40,60,0.12);border:0;cursor:pointer}
-
     /* Responsive: mobile layout and topbar visible in narrow widths or landscape phones */
     @media (max-width:980px){
       .layout{grid-template-columns:1fr;gap:12px}
@@ -121,7 +118,7 @@
         <h1>Gran Carte</h1>
         <p class="muted">Taverna ’e Mare — Carta completa</p>
       </div>
-      <div style="margin-left:auto" class="muted">Stile: Quanto Basta • Colori confermati</div>
+      <div style="margin-left:auto" class="muted">Taverna ’e Mare — Carta completa</div>
     </header>
 
     <!-- Topbar per telefoni in orizzontale / mobile -->
@@ -340,8 +337,6 @@
 
       </main>
     </div>
-
-    <button class="cta-fixed" onclick="callWaiter()">Chiama Cameriere</button>
   </div>
 
   <script>
@@ -402,29 +397,15 @@
     (function(){
       const hash = location.hash.replace('#','');
       if(hash){
-        // wait for DOM
         setTimeout(()=> openCard(hash,true),120);
       } else {
-        // di default tieni tutto chiuso (richiesto)
         closeAll();
       }
     })();
 
-    // Funzione chiamata dal CTA
-    function callWaiter(){
-      if(window.navigator && navigator.vibrate) navigator.vibrate(50);
-      // placeholder: invio evento al sistema di sala
-      alert('Richiesta inviata al personale di sala.');
-    }
-
     // Accessibilità: chiudi con ESC
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape') closeAll();
-    });
-
-    // Se l'utente ridimensiona da desktop a mobile, mantieni comportamento coerente
-    window.addEventListener('resize', ()=>{
-      // se passa a desktop e non c'è nulla aperto, apri la prima se vuoi; qui manteniamo chiuso per rispettare richiesta
     });
   </script>
 </body>
