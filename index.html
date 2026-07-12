@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Gran Carte — Taverna ’e Mare</title>
   <style>
-    /* Palette e tipografia (colori confermati dall'utente) */
     :root{
       --navy:#0B3D5B;
       --sea:#2E8B7B;
@@ -19,30 +18,62 @@
       --glass: rgba(11,61,91,0.06);
       --maxw:1100px;
     }
-    /* Reset minimale */
+
+    /* Reset e tipografia */
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none}
-    /* Layout stile "Quanto Basta" - header compatto + due colonne su desktop */
-    .wrap{max-width:var(--maxw);margin:20px auto;padding:20px;}
-    header.site-header{display:flex;align-items:center;gap:18px;margin-bottom:18px;}
+
+    /* Contenitore principale */
+    .wrap{max-width:var(--maxw);margin:18px auto;padding:18px;}
+    header.site-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:14px;}
     header .brand{display:flex;flex-direction:column;}
-    header h1{font-family:"Playfair Display",serif;font-size:34px;color:var(--navy);margin:0;line-height:1;}
-    header p{margin:4px 0 0 0;color:var(--muted);font-size:14px;}
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:20px;}
-    /* Sidebar categorie sticky */
-    nav.categories{position:sticky;top:18px;background:linear-gradient(180deg,var(--card),#fff);border:1px solid var(--border);padding:14px;border-radius:10px;height:fit-content;}
-    nav.categories h3{font-size:14px;color:var(--sea);margin:0 0 8px 0;}
-    nav .cat-list{display:flex;flex-direction:column;gap:8px;}
-    nav .cat-list a{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;color:#0f1724;font-weight:600;border:1px solid transparent;}
-    nav .cat-list a:hover{background:var(--glass);border-color:var(--border);cursor:pointer}
-    nav .sub{font-weight:500;color:var(--muted);font-size:13px;margin-left:8px}
+    header h1{font-family:"Playfair Display",serif;font-size:30px;color:var(--navy);margin:0;line-height:1;}
+    header p{margin:6px 0 0 0;color:var(--muted);font-size:13px;}
+
+    /* Layout principale: sidebar + main su desktop */
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start;}
+
+    /* Barra categorie top (desktop sidebar + mobile top) */
+    nav.categories{
+      background:linear-gradient(180deg,var(--card),#fff);
+      border:1px solid var(--border);
+      padding:12px;border-radius:10px;
+      height:fit-content;
+    }
+    nav.categories h3{font-size:13px;color:var(--sea);margin:0 0 8px 0;font-weight:700}
+    .cat-list{display:flex;flex-direction:column;gap:8px}
+    .cat-btn{
+      display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;
+      color:var(--text);font-weight:700;border:1px solid transparent;background:transparent;cursor:pointer;
+    }
+    .cat-btn:hover{background:var(--glass);border-color:var(--border)}
+    .cat-btn[aria-expanded="true"]{background:linear-gradient(90deg, rgba(11,61,91,0.04), rgba(46,139,123,0.02));border-color:rgba(11,61,91,0.06)}
+
+    /* Top horizontal category bar for small/landscape phones */
+    .topbar{
+      display:none;
+      gap:8px;
+      overflow:auto;
+      padding:10px 6px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg,var(--card),#fff);
+      -webkit-overflow-scrolling:touch;
+    }
+    .topbar .cat-pill{
+      flex:0 0 auto;
+      padding:8px 12px;border-radius:999px;background:transparent;border:1px solid transparent;font-weight:700;color:var(--text);
+      cursor:pointer;margin-right:8px;
+    }
+    .topbar .cat-pill.active{background:var(--glass);border-color:var(--border)}
+
     /* Main menu cards */
-    main.menu{padding:12px;background:transparent;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 6px 18px rgba(12,40,60,0.04);}
+    main.menu{padding:6px 0;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 6px 18px rgba(12,40,60,0.04);}
     .card h2{font-family:"Playfair Display",serif;color:var(--navy);font-size:20px;margin:0 0 8px 0;}
     .subheading{color:var(--sea);font-size:13px;margin-bottom:10px;font-weight:700}
-    .grid-items{display:flex;flex-direction:column;gap:10px}
+    .grid-items{display:flex;flex-direction:column;gap:8px}
     .item{display:flex;justify-content:space-between;gap:12px;padding:10px;border-radius:8px;border-bottom:1px dashed #f3f3f3;}
     .item:last-child{border-bottom:0}
     .left{max-width:74%}
@@ -52,24 +83,35 @@
     .price small{font-weight:500;color:var(--muted);font-size:13px}
     .note{font-size:13px;color:#374151;margin-top:10px}
     .allergens{font-size:13px;color:#374151;margin-top:14px;border-top:1px solid #eee;padding-top:12px}
+
+    /* Accordion behavior: collapsed content */
+    .card .content{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 0;}
+    .card.open .content{padding-top:8px;max-height:2000px;transition:max-height .36s cubic-bezier(.2,.9,.3,1);}
+
     /* CTA flottante */
     .cta-fixed{position:fixed;right:18px;bottom:18px;background:var(--gold);color:#08202a;padding:12px 16px;border-radius:999px;font-weight:800;box-shadow:0 8px 26px rgba(12,40,60,0.12);border:0;cursor:pointer}
-    /* Responsive */
-    @media(max-width:980px){
+
+    /* Responsive: mobile layout and topbar visible in narrow widths or landscape phones */
+    @media (max-width:980px){
       .layout{grid-template-columns:1fr;gap:12px}
-      nav.categories{position:relative;top:0;display:flex;overflow:auto;padding:10px;flex-direction:row;gap:8px}
-      nav .cat-list{flex-direction:row;gap:8px}
-      nav .cat-list a{white-space:nowrap;padding:8px 12px}
-      .cta-fixed{right:12px;bottom:12px;padding:10px 12px}
+      nav.categories{display:none} /* hide sidebar on small screens, use topbar instead */
+      .topbar{display:flex}
     }
-    @media(max-width:520px){
+
+    /* Force topbar visible on small height (landscape phones) */
+    @media (max-height:520px){
+      .topbar{display:flex}
+      nav.categories{display:none}
+    }
+
+    @media (max-width:520px){
       header h1{font-size:20px}
       .name{font-size:15px}
       .desc{font-size:13px}
     }
-    /* Micro utility */
+
+    /* Utility */
     .muted{color:var(--muted);font-size:13px}
-    .kg{font-size:13px;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -79,496 +121,220 @@
         <h1>Gran Carte</h1>
         <p class="muted">Taverna ’e Mare — Carta completa</p>
       </div>
-      <div style="margin-left:auto" class="muted">Menu Taverna 'e mare</div>
+      <div style="margin-left:auto" class="muted">Stile: Quanto Basta • Colori confermati</div>
     </header>
 
+    <!-- Topbar per telefoni in orizzontale / mobile -->
+    <div class="topbar" id="topbar" role="tablist" aria-label="Categorie menu orizzontali">
+      <button class="cat-pill" data-target="le-ostriche">Le Ostriche</button>
+      <button class="cat-pill" data-target="le-nostre-selezioni">Le Nostre Selezioni</button>
+      <button class="cat-pill" data-target="i-crudi">I Crudi</button>
+      <button class="cat-pill" data-target="innovazione-tradizione">Innovazione e tradizione</button>
+      <button class="cat-pill" data-target="i-crostacei">I Crostacei</button>
+      <button class="cat-pill" data-target="i-nostri-sfizi">I nostri sfizi</button>
+      <button class="cat-pill" data-target="primi-piatti">Primi piatti</button>
+      <button class="cat-pill" data-target="i-secondi">I Secondi</button>
+      <button class="cat-pill" data-target="il-barbecue">Il Barbecue</button>
+      <button class="cat-pill" data-target="i-contorni">I Contorni</button>
+      <button class="cat-pill" data-target="dessert">Dessert</button>
+      <button class="cat-pill" data-target="allergeni">Allergeni</button>
+    </div>
+
     <div class="layout">
-      <!-- Sidebar categorie con ancore -->
+      <!-- Sidebar categorie (desktop) -->
       <nav class="categories" aria-label="Categorie menu">
         <h3>Sezioni</h3>
-        <div class="cat-list">
-          <a href="#le-ostriche">Le Ostriche</a>
-          <a href="#le-nostre-selezioni">Le Nostre Selezioni</a>
-          <a href="#i-crudi">I Crudi</a>
-          <a href="#innovazione-tradizione">Innovazione e tradizione</a>
-          <a href="#i-crostacei">I Crostacei</a>
-          <a href="#i-nostri-sfizi">I nostri sfizi</a>
-          <a href="#primi-piatti">Primi piatti</a>
-          <a href="#i-secondi">I Secondi</a>
-          <a href="#il-barbecue">Il Barbecue</a>
-          <a href="#i-contorni">I Contorni</a>
-          <a href="#dessert">Dessert e Coccole Finali</a>
-          <a href="#allergeni">Allergeni</a>
+        <div class="cat-list" role="tablist" aria-orientation="vertical">
+          <button class="cat-btn" data-target="le-ostriche" aria-expanded="false">Le Ostriche</button>
+          <button class="cat-btn" data-target="le-nostre-selezioni" aria-expanded="false">Le Nostre Selezioni</button>
+          <button class="cat-btn" data-target="i-crudi" aria-expanded="false">I Crudi</button>
+          <button class="cat-btn" data-target="innovazione-tradizione" aria-expanded="false">Innovazione e tradizione</button>
+          <button class="cat-btn" data-target="i-crostacei" aria-expanded="false">I Crostacei</button>
+          <button class="cat-btn" data-target="i-nostri-sfizi" aria-expanded="false">I nostri sfizi</button>
+          <button class="cat-btn" data-target="primi-piatti" aria-expanded="false">Primi piatti</button>
+          <button class="cat-btn" data-target="i-secondi" aria-expanded="false">I Secondi</button>
+          <button class="cat-btn" data-target="il-barbecue" aria-expanded="false">Il Barbecue</button>
+          <button class="cat-btn" data-target="i-contorni" aria-expanded="false">I Contorni</button>
+          <button class="cat-btn" data-target="dessert" aria-expanded="false">Dessert e Coccole Finali</button>
+          <button class="cat-btn" data-target="allergeni" aria-expanded="false">Allergeni</button>
         </div>
       </nav>
 
-      <!-- Main -->
+      <!-- Main: ogni sezione è un'accordion che si apre solo quando premuta -->
       <main class="menu" id="menu-root">
         <!-- Le Ostriche -->
-        <section class="card" id="le-ostriche" aria-labelledby="h-ostriche">
+        <section class="card" id="le-ostriche" role="region" aria-labelledby="h-ostriche">
           <h2 id="h-ostriche">Le Ostriche</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Ostrica Regal (Irlanda – calibro 3)</span>
-              </div>
-              <div class="price">6 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Ostrica Tarbouriech (Italia, Sacca Scardovari – calibro 4)</span>
-              </div>
-              <div class="price">8 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Ostrica Royale David Hervet (Francia calibro 4)</span>
-              </div>
-              <div class="price">6 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Ostrica Bora ( italia, Sardegna calibro 3)</span>
-              </div>
-              <div class="price">6 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Ostrica Regal (Irlanda – calibro 3)</span></div><div class="price">6 €</div></div>
+              <div class="item"><div class="left"><span class="name">Ostrica Tarbouriech (Italia, Sacca Scardovari – calibro 4)</span></div><div class="price">8 €</div></div>
+              <div class="item"><div class="left"><span class="name">Ostrica Royale David Hervet (Francia calibro 4)</span></div><div class="price">6 €</div></div>
+              <div class="item"><div class="left"><span class="name">Ostrica Bora ( italia, Sardegna calibro 3)</span></div><div class="price">6 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- Le Nostre Selezioni -->
-        <section class="card" id="le-nostre-selezioni" aria-labelledby="h-selezioni">
+        <section class="card" id="le-nostre-selezioni" role="region" aria-labelledby="h-selezioni">
           <h2 id="h-selezioni">Le Nostre Selezioni</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Caviale Caviar Black Siberian 10gr</span>
-              </div>
-              <div class="price">30 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Selezione di Crostacei (crudi, gratinati o al barbecue)</span>
-                <span class="desc">€ 14 per 100gr</span>
-              </div>
-              <div class="price">14 € <small>/ 100 g</small></div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Noci di mare (taratufi)</span>
-                <span class="desc">€ 3 al pz</span>
-              </div>
-              <div class="price">3 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Caviale Caviar Black Siberian 10gr</span></div><div class="price">30 €</div></div>
+              <div class="item"><div class="left"><span class="name">Selezione di Crostacei (crudi, gratinati o al barbecue)</span><span class="desc">€ 14 per 100gr</span></div><div class="price">14 € <small>/ 100 g</small></div></div>
+              <div class="item"><div class="left"><span class="name">Noci di mare (taratufi)</span><span class="desc">€ 3 al pz</span></div><div class="price">3 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- I Crudi -->
-        <section class="card" id="i-crudi" aria-labelledby="h-crudi">
+        <section class="card" id="i-crudi" role="region" aria-labelledby="h-crudi">
           <h2 id="h-crudi">I Crudi</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Gran Crudo</span>
-                <span class="desc">Selezione di carpacci, tartare e sashimi</span>
-              </div>
-              <div class="price">45 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Tartara</span>
-                <span class="desc">Tartara di tonno, zest di limone,
-finto caviale di tapioca e olive disidratate</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Tartara di Ricciola</span>
-                <span class="desc">Tartara di ricciola , stracotto di pomodoro San Marzano, la sua acqua e olio al basilico</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Crudo cotto</span>
-                <span class="desc">Seppia marinata bilanciata, limone candito, arachidi tostati, citronette al miele</span>
-              </div>
-              <div class="price">16 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Carpaccio</span>
-                <span class="desc">Battuto di gambero rosso del golfo, caciottina al limone, insalatina di frutti rossi</span>
-              </div>
-              <div class="price">18 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Sashimi</span>
-                <span class="desc">Sashimi di pezzogna, limone e peperoncino fermentato</span>
-              </div>
-              <div class="price">20 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Il Gran Crudo</span><span class="desc">Selezione di carpacci, tartare e sashimi</span></div><div class="price">45 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Tartara</span><span class="desc">Tartara di tonno, zest di limone, finto caviale di tapioca e olive disidratate</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Tartara di Ricciola</span><span class="desc">Tartara di ricciola , stracotto di pomodoro San Marzano, la sua acqua e olio al basilico</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Crudo cotto</span><span class="desc">Seppia marinata bilanciata, limone candito, arachidi tostati, citronette al miele</span></div><div class="price">16 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Carpaccio</span><span class="desc">Battuto di gambero rosso del golfo, caciottina al limone, insalatina di frutti rossi</span></div><div class="price">18 €</div></div>
+              <div class="item"><div class="left"><span class="name">Sashimi</span><span class="desc">Sashimi di pezzogna, limone e peperoncino fermentato</span></div><div class="price">20 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- Innovazione e tradizione -->
-        <section class="card" id="innovazione-tradizione" aria-labelledby="h-innovazione">
+        <section class="card" id="innovazione-tradizione" role="region" aria-labelledby="h-innovazione">
           <h2 id="h-innovazione">Innovazione e tradizione</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Fettuccine di calamaro</span>
-                <span class="desc">Crudo di gamberi , coulis di pomodoro e basilico</span>
-              </div>
-              <div class="price">22 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Triglia</span>
-                <span class="desc">Sandwich di triglia, salsa beurre blanc e olio al basilico</span>
-              </div>
-              <div class="price">18 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Giardino Marino</span>
-                <span class="desc">Insalatina di molluschi e crostacei cotti a bassa temperatura e frutti di mare</span>
-              </div>
-              <div class="price">24 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Polpo Partenopeo</span>
-                <span class="desc">Tentacolo di polpo in due cotture, carpaccio di pomodoro cuor di bue,
-porro al barbecue, riduzione di aceto di lamponi e mandorle tostate*</span>
-              </div>
-              <div class="price">18 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Tempura</span>
-                <span class="desc">Zeppola di baccala, riduzione di lamponi fermentati</span>
-              </div>
-              <div class="price">18 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Fettuccine di calamaro</span><span class="desc">Crudo di gamberi , coulis di pomodoro e basilico</span></div><div class="price">22 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Triglia</span><span class="desc">Sandwich di triglia, salsa beurre blanc e olio al basilico</span></div><div class="price">18 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Giardino Marino</span><span class="desc">Insalatina di molluschi e crostacei cotti a bassa temperatura e frutti di mare</span></div><div class="price">24 €</div></div>
+              <div class="item"><div class="left"><span class="name">Polpo Partenopeo</span><span class="desc">Tentacolo di polpo in due cotture, carpaccio di pomodoro cuor di bue, porro al barbecue, riduzione di aceto di lamponi e mandorle tostate*</span></div><div class="price">18 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Tempura</span><span class="desc">Zeppola di baccala, riduzione di lamponi fermentati</span></div><div class="price">18 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- I Crostacei -->
-        <section class="card" id="i-crostacei" aria-labelledby="h-crostacei">
+        <section class="card" id="i-crostacei" role="region" aria-labelledby="h-crostacei">
           <h2 id="h-crostacei">I Crostacei</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Astice del Mediterraneo (al Kg)</span>
-              </div>
-              <div class="price">150 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Aragosta del Golfo (al Kg)</span>
-              </div>
-              <div class="price">180 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Cicala del Golfo (al Kg)</span>
-              </div>
-              <div class="price">180 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Astice Canada (al Kg)</span>
-              </div>
-              <div class="price">100 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Astice del Mediterraneo (al Kg)</span></div><div class="price">150 €</div></div>
+              <div class="item"><div class="left"><span class="name">Aragosta del Golfo (al Kg)</span></div><div class="price">180 €</div></div>
+              <div class="item"><div class="left"><span class="name">Cicala del Golfo (al Kg)</span></div><div class="price">180 €</div></div>
+              <div class="item"><div class="left"><span class="name">Astice Canada (al Kg)</span></div><div class="price">100 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- I nostri sfizi -->
-        <section class="card" id="i-nostri-sfizi" aria-labelledby="h-sfizi">
+        <section class="card" id="i-nostri-sfizi" role="region" aria-labelledby="h-sfizi">
           <h2 id="h-sfizi">I nostri sfizi</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Alici del Cantabrico</span>
-                <span class="desc">French toast con alici del Cantabrico, lattecotto affumicato</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Speck di tonno</span>
-                <span class="desc">Pan brioche con ventresca di tonno, pomodorini semi dry e zest di limone</span>
-              </div>
-              <div class="price">20 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Alici del Cantabrico</span><span class="desc">French toast con alici del Cantabrico, lattecotto affumicato</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Speck di tonno</span><span class="desc">Pan brioche con ventresca di tonno, pomodorini semi dry e zest di limone</span></div><div class="price">20 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- Primi piatti -->
-        <section class="card" id="primi-piatti" aria-labelledby="h-primi">
+        <section class="card" id="primi-piatti" role="region" aria-labelledby="h-primi">
           <h2 id="h-primi">Primi piatti</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">La Ripiena</span>
-                <span class="desc">Raviolo di pasta e patate, guazzetto di cozze e fonduta al pecorino</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Scoglio</span>
-                <span class="desc">La nostra interpretazione di pasta allo scoglio</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Tradizione</span>
-                <span class="desc">Mescafrancesca con cozze fagioli cannellini, pomodorini semi dry e pane saporiti</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Essenza Marina</span>
-                <span class="desc">Spaghettini al quinto quarto di seppia ed il suo lardo</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Risotto</span>
-                <span class="desc">Versione di risotto alla pescatora</span>
-              </div>
-              <div class="price">22 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Tajarin</span>
-                <span class="desc">Tagliolino mantecato al parmigiano, tartufo estivo e crudo di gamberi</span>
-              </div>
-              <div class="price">25 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Territorio</span>
-                <span class="desc">Linguina al pomodoro del Piennolo e aria al parmigiano</span>
-              </div>
-              <div class="price">16 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">La Ripiena</span><span class="desc">Raviolo di pasta e patate, guazzetto di cozze e fonduta al pecorino</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Scoglio</span><span class="desc">La nostra interpretazione di pasta allo scoglio</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Tradizione</span><span class="desc">Mescafrancesca con cozze fagioli cannellini, pomodorini semi dry e pane saporiti</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Essenza Marina</span><span class="desc">Spaghettini al quinto quarto di seppia ed il suo lardo</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Risotto</span><span class="desc">Versione di risotto alla pescatora</span></div><div class="price">22 €</div></div>
+              <div class="item"><div class="left"><span class="name">Tajarin</span><span class="desc">Tagliolino mantecato al parmigiano, tartufo estivo e crudo di gamberi</span></div><div class="price">25 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Territorio</span><span class="desc">Linguina al pomodoro del Piennolo e aria al parmigiano</span></div><div class="price">16 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- I Secondi -->
-        <section class="card" id="i-secondi" aria-labelledby="h-secondi">
+        <section class="card" id="i-secondi" role="region" aria-labelledby="h-secondi">
           <h2 id="h-secondi">I Secondi</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Come una Carne</span>
-                <span class="desc">Chateaubriand di tonno rosso con fondente di patate al tartufo (per 2 persone)</span>
-              </div>
-              <div class="price">50 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Trancio</span>
-                <span class="desc">Rollatina di spigola, asparagi, fior di latte di Agerola, patata pavè e salsa bourre blanc al basilico</span>
-              </div>
-              <div class="price">22 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Nostro Fritto</span>
-                <span class="desc">Gamberi, calamari, baccalà e alici,insalatina di misticanza finocchi e arancia*</span>
-              </div>
-              <div class="price">22 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Carne</span>
-                <span class="desc">Stracotto di guancia di vitello al Lacryma Christi del Vesuvio</span>
-              </div>
-              <div class="price">22 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Come una Carne</span><span class="desc">Chateaubriand di tonno rosso con fondente di patate al tartufo (per 2 persone)</span></div><div class="price">50 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Trancio</span><span class="desc">Rollatina di spigola, asparagi, fior di latte di Agerola, patata pavè e salsa bourre blanc al basilico</span></div><div class="price">22 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Nostro Fritto</span><span class="desc">Gamberi, calamari, baccalà e alici,insalatina di misticanza finocchi e arancia*</span></div><div class="price">22 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Carne</span><span class="desc">Stracotto di guancia di vitello al Lacryma Christi del Vesuvio</span></div><div class="price">22 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- Il Barbecue -->
-        <section class="card" id="il-barbecue" aria-labelledby="h-barbecue">
+        <section class="card" id="il-barbecue" role="region" aria-labelledby="h-barbecue">
           <h2 id="h-barbecue">Il Barbecue</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Tonno</span>
-                <span class="desc">Tagliata di tonno</span>
-              </div>
-              <div class="price">20 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Pescato al Barbecue (al Kg)</span>
-              </div>
-              <div class="price">70 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Il Tonno</span><span class="desc">Tagliata di tonno</span></div><div class="price">20 €</div></div>
+              <div class="item"><div class="left"><span class="name">Pescato al Barbecue (al Kg)</span></div><div class="price">70 €</div></div>
             </div>
           </div>
         </section>
 
         <!-- I Contorni -->
-        <section class="card" id="i-contorni" aria-labelledby="h-contorni">
+        <section class="card" id="i-contorni" role="region" aria-labelledby="h-contorni">
           <h2 id="h-contorni">I Contorni</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Insalatina di pomodori, cetrioli, olive taggiasche e cipollotto</span>
-              </div>
-              <div class="price">8 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Insalatina di misticanza, finocchi e arancia</span>
-              </div>
-              <div class="price">6 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Carciofi al salto con olive taggiasche</span>
-              </div>
-              <div class="price">8 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Patate al forno</span>
-              </div>
-              <div class="price">8 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Insalatina di pomodori, cetrioli, olive taggiasche e cipollotto</span></div><div class="price">8 €</div></div>
+              <div class="item"><div class="left"><span class="name">Insalatina di misticanza, finocchi e arancia</span></div><div class="price">6 €</div></div>
+              <div class="item"><div class="left"><span class="name">Carciofi al salto con olive taggiasche</span></div><div class="price">8 €</div></div>
+              <div class="item"><div class="left"><span class="name">Patate al forno</span></div><div class="price">8 €</div></div>
             </div>
           </div>
         </section>
 
-        <!-- Dessert e Coccole Finali -->
-        <section class="card" id="dessert" aria-labelledby="h-dessert">
+        <!-- Dessert -->
+        <section class="card" id="dessert" role="region" aria-labelledby="h-dessert">
           <h2 id="h-dessert">Dessert e Coccole Finali</h2>
-          <div class="grid-items">
-            <div class="item">
-              <div class="left">
-                <span class="name">Selezione di formaggi</span>
-                <span class="desc">Erborinati media e lunga stagionatura con confetture</span>
-              </div>
-              <div class="price">18 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Soufflè</span>
-                <span class="desc">Agli agrumi con gelato allo yogurt e crumble al cioccolato bianco</span>
-                <span class="desc"><em>da comunicare all’inizio dell’ordinazione</em></span>
-              </div>
-              <div class="price">12 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Babà</span>
-                <span class="desc">Savarin con crema inglese e frutti rossi</span>
-              </div>
-              <div class="price">12 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">La Crostata</span>
-                <span class="desc">Sable con crema chantilly al limone, lemon curd, namelaka al cioccolato bianco</span>
-              </div>
-              <div class="price">12 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Innovazione</span>
-                <span class="desc">Quenelle al cioccolato fondente 70%, namelaka alla mandorla</span>
-              </div>
-              <div class="price">12 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Il Tiramisù</span>
-                <span class="desc">Pate à bombe al tiramisu con gelato al caffè</span>
-              </div>
-              <div class="price">12 €</div>
-            </div>
-
-            <div class="item">
-              <div class="left">
-                <span class="name">Mousse di ricotta e pera</span>
-                <span class="desc">Croccante alla nocciola , pere disidratate e cioccolato fondente 70%</span>
-              </div>
-              <div class="price">12 €</div>
+          <div class="content">
+            <div class="grid-items">
+              <div class="item"><div class="left"><span class="name">Selezione di formaggi</span><span class="desc">Erborinati media e lunga stagionatura con confetture</span></div><div class="price">18 €</div></div>
+              <div class="item"><div class="left"><span class="name">Soufflè</span><span class="desc">Agli agrumi con gelato allo yogurt e crumble al cioccolato bianco</span><span class="desc"><em>da comunicare all’inizio dell’ordinazione</em></span></div><div class="price">12 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Babà</span><span class="desc">Savarin con crema inglese e frutti rossi</span></div><div class="price">12 €</div></div>
+              <div class="item"><div class="left"><span class="name">La Crostata</span><span class="desc">Sable con crema chantilly al limone, lemon curd, namelaka al cioccolato bianco</span></div><div class="price">12 €</div></div>
+              <div class="item"><div class="left"><span class="name">Innovazione</span><span class="desc">Quenelle al cioccolato fondente 70%, namelaka alla mandorla</span></div><div class="price">12 €</div></div>
+              <div class="item"><div class="left"><span class="name">Il Tiramisù</span><span class="desc">Pate à bombe al tiramisu con gelato al caffè</span></div><div class="price">12 €</div></div>
+              <div class="item"><div class="left"><span class="name">Mousse di ricotta e pera</span><span class="desc">Croccante alla nocciola , pere disidratate e cioccolato fondente 70%</span></div><div class="price">12 €</div></div>
             </div>
           </div>
         </section>
 
-        <div class="note">
-          * In mancanza di reperibilità del prodotto fresco, alcuni prodotti potrebbero essere surgelati o abbattuti in proprio.
-        </div>
+        <div class="note">* In mancanza di reperibilità del prodotto fresco, alcuni prodotti potrebbero essere surgelati o abbattuti in proprio.</div>
 
         <!-- Allergeni -->
-        <section class="card" id="allergeni" aria-labelledby="h-allergeni">
+        <section class="card" id="allergeni" role="region" aria-labelledby="h-allergeni">
           <h2 id="h-allergeni">Allergeni</h2>
-          <div class="allergens">
-            <p>Si prega di comunicare eventuali intolleranze e/o allergie al personale di sala.</p>
-            <p>Per qualsiasi informazione sui prodotti serviti è possibile consultare la seguente tabella degli allergeni:</p>
-            <ol>
-              <li>1 – CEREALI CONTENENTI GLUTINE (grano, segale, orzo, avena, farro, kamut o i loro ceppi ibridati) e prodotti derivati</li>
-              <li>2 – CROSTACEI E DERIVATI (marini e d’acqua dolce: gamberi, scampi, granchi e simili)</li>
-              <li>3 – UOVA E DERIVATI (maionese, emulsionanti, pasta all’uovo)</li>
-              <li>4- PESCE E DERIVATI (anche in piccole percentuali)</li>
-              <li>5 – ARACHIDI E DERIVATI (creme e condimenti in cui vi sia anche in minima dosi)</li>
-              <li>6 – SOIA E DERIVATI (latte di soia, tofu, spaghetti di soia e simili)</li>
-              <li>7 – LATTE E DERIVATI (yogurt, biscotti, torte, gelati e creme varie)</li>
-              <li>8 – FRUTTA A GUSCIO E DERIVATI (mandorle, nocciole, noci comuni, noci di acagiù, noci pecan, anacardi, pistacchi)</li>
-              <li>9 – SEDANO E DERIVATI (sia in pezzi che all’interno di preparati per zuppe, salse e concentrati vegetali)</li>
-              <li>10 – SENAPE E DERIVATI (si può trovare in salse e condimenti, specie nella mostarda)</li>
-              <li>11 – SEMI DI SESAMO E DERIVATI (semi interi usati per il pane, farine che lo contengono anche in minima percentuale)</li>
-              <li>12 – ANIDRIDE SOLFOROSA E SOLFITI (in concentrazioni superiori a 10 mg/kg o 10 mg/l espressi come SO2)</li>
-              <li>13 – LUPINI E DERIVATI (presenti in cibi vegan sottoforma di arrosti, salamini, farine e similari)</li>
-              <li>14 – MOLLUSCHI E DERIVATI (canestrelli, cannolicchi, capesante, cozze, ostriche, patelle, vongole, telline ecc.)</li>
-            </ol>
+          <div class="content">
+            <div class="allergens">
+              <p>Si prega di comunicare eventuali intolleranze e/o allergie al personale di sala.</p>
+              <p>Per qualsiasi informazione sui prodotti serviti è possibile consultare la seguente tabella degli allergeni:</p>
+              <ol>
+                <li>1 – CEREALI CONTENENTI GLUTINE (grano, segale, orzo, avena, farro, kamut o i loro ceppi ibridati) e prodotti derivati</li>
+                <li>2 – CROSTACEI E DERIVATI (marini e d’acqua dolce: gamberi, scampi, granchi e simili)</li>
+                <li>3 – UOVA E DERIVATI (maionese, emulsionanti, pasta all’uovo)</li>
+                <li>4- PESCE E DERIVATI (anche in piccole percentuali)</li>
+                <li>5 – ARACHIDI E DERIVATI (creme e condimenti in cui vi sia anche in minima dosi)</li>
+                <li>6 – SOIA E DERIVATI (latte di soia, tofu, spaghetti di soia e simili)</li>
+                <li>7 – LATTE E DERIVATI (yogurt, biscotti, torte, gelati e creme varie)</li>
+                <li>8 – FRUTTA A GUSCIO E DERIVATI (mandorle, nocciole, noci comuni, noci di acagiù, noci pecan, anacardi, pistacchi)</li>
+                <li>9 – SEDANO E DERIVATI (sia in pezzi che all’interno di preparati per zuppe, salse e concentrati vegetali)</li>
+                <li>10 – SENAPE E DERIVATI (si può trovare in salse e condimenti, specie nella mostarda)</li>
+                <li>11 – SEMI DI SESAMO E DERIVATI (semi interi usati per il pane, farine che lo contengono anche in minima percentuale)</li>
+                <li>12 – ANIDRIDE SOLFOROSA E SOLFITI (in concentrazioni superiori a 10 mg/kg o 10 mg/l espressi come SO2)</li>
+                <li>13 – LUPINI E DERIVATI (presenti in cibi vegan sottoforma di arrosti, salamini, farine e similari)</li>
+                <li>14 – MOLLUSCHI E DERIVATI (canestrelli, cannolicchi, capesante, cozze, ostriche, patelle, vongole, telline ecc.)</li>
+              </ol>
+            </div>
           </div>
         </section>
 
@@ -579,30 +345,87 @@ porro al barbecue, riduzione di aceto di lamponi e mandorle tostate*</span>
   </div>
 
   <script>
-    // Funzioni utili per comportamento NFC / UX
-    function callWaiter(){
-      // comportamento placeholder: invia evento custom per integrazione POS o notifica
-      if(window.navigator && navigator.vibrate) navigator.vibrate(50);
-      alert('Richiesta inviata al personale di sala.');
+    // Selettori
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const sidebarBtns = Array.from(document.querySelectorAll('.cat-btn'));
+    const topPills = Array.from(document.querySelectorAll('.cat-pill'));
+
+    // Funzione per chiudere tutte le card
+    function closeAll(){
+      cards.forEach(c => c.classList.remove('open'));
+      sidebarBtns.forEach(b => b.setAttribute('aria-expanded','false'));
+      topPills.forEach(p => p.classList.remove('active'));
     }
 
-    // Smooth scroll per ancore
-    document.querySelectorAll('nav.categories a').forEach(a=>{
-      a.addEventListener('click', function(e){
-        e.preventDefault();
-        const id = this.getAttribute('href');
-        const el = document.querySelector(id);
-        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    // Apri una card per id (solo una aperta alla volta)
+    function openCard(id, focus=false){
+      const target = document.getElementById(id);
+      if(!target) return;
+      const isOpen = target.classList.contains('open');
+      closeAll();
+      if(!isOpen){
+        target.classList.add('open');
+        // sync sidebar button aria-expanded
+        const sb = sidebarBtns.find(b => b.dataset.target === id);
+        if(sb) sb.setAttribute('aria-expanded','true');
+        // sync top pill active
+        const tp = topPills.find(p => p.dataset.target === id);
+        if(tp) tp.classList.add('active');
+        // scroll into view on small screens
+        if(window.innerWidth <= 980 || window.innerHeight <= 520){
+          setTimeout(()=> target.scrollIntoView({behavior:'smooth',block:'start'}),80);
+        }
+        if(focus) target.querySelector('.name')?.focus();
+      }
+    }
+
+    // Eventi sidebar (desktop)
+    sidebarBtns.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.dataset.target;
+        openCard(id,true);
       });
     });
 
-    // Deep-linking on load
+    // Eventi topbar (mobile/landscape)
+    topPills.forEach(pill=>{
+      pill.addEventListener('click', ()=>{
+        const id = pill.dataset.target;
+        openCard(id,true);
+        // highlight active pill
+        topPills.forEach(pp=>pp.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
+
+    // Deep-linking: se hash presente apri la categoria corrispondente
     (function(){
-      if(location.hash){
-        const el = document.querySelector(location.hash);
-        if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),120);
+      const hash = location.hash.replace('#','');
+      if(hash){
+        // wait for DOM
+        setTimeout(()=> openCard(hash,true),120);
+      } else {
+        // di default tieni tutto chiuso (richiesto)
+        closeAll();
       }
     })();
+
+    // Funzione chiamata dal CTA
+    function callWaiter(){
+      if(window.navigator && navigator.vibrate) navigator.vibrate(50);
+      // placeholder: invio evento al sistema di sala
+      alert('Richiesta inviata al personale di sala.');
+    }
+
+    // Accessibilità: chiudi con ESC
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeAll();
+    });
+
+    // Se l'utente ridimensiona da desktop a mobile, mantieni comportamento coerente
+    window.addEventListener('resize', ()=>{
+      // se passa a desktop e non c'è nulla aperto, apri la prima se vuoi; qui manteniamo chiuso per rispettare richiesta
+    });
   </script>
 </body>
 </html>
