@@ -19,40 +19,19 @@
       --maxw:1100px;
     }
 
-    /* Reset e tipografia */
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased;}
     a{color:inherit;text-decoration:none}
 
-    /* Contenitore principale */
     .wrap{max-width:var(--maxw);margin:18px auto;padding:18px;}
     header.site-header{display:flex;align-items:flex-start;gap:18px;margin-bottom:14px;}
     header .brand{display:flex;flex-direction:column;}
     header h1{font-family:"Playfair Display",serif;font-size:30px;color:var(--navy);margin:0;line-height:1;}
     header p{margin:6px 0 0 0;color:var(--muted);font-size:13px;}
 
-    /* Layout principale: sidebar + main su desktop */
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start;}
-
-    /* Barra categorie top (desktop sidebar + mobile top) */
-    nav.categories{
-      background:linear-gradient(180deg,var(--card),#fff);
-      border:1px solid var(--border);
-      padding:12px;border-radius:10px;
-      height:fit-content;
-    }
-    nav.categories h3{font-size:13px;color:var(--sea);margin:0 0 8px 0;font-weight:700}
-    .cat-list{display:flex;flex-direction:column;gap:8px}
-    .cat-btn{
-      display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;
-      color:var(--text);font-weight:700;border:1px solid transparent;background:transparent;cursor:pointer;
-    }
-    .cat-btn:hover{background:var(--glass);border-color:var(--border)}
-    .cat-btn[aria-expanded="true"]{background:linear-gradient(90deg, rgba(11,61,91,0.04), rgba(46,139,123,0.02));border-color:rgba(11,61,91,0.06)}
-
-    /* Top horizontal category bar for small/landscape phones */
+    /* Topbar (visibile su mobile landscape e su tutte le larghezze come richiesto) */
     .topbar{
-      display:none;
+      display:flex;
       gap:8px;
       overflow:auto;
       padding:10px 6px;
@@ -60,6 +39,7 @@
       border:1px solid var(--border);
       background:linear-gradient(180deg,var(--card),#fff);
       -webkit-overflow-scrolling:touch;
+      margin-bottom:14px;
     }
     .topbar .cat-pill{
       flex:0 0 auto;
@@ -68,7 +48,22 @@
     }
     .topbar .cat-pill.active{background:var(--glass);border-color:var(--border)}
 
-    /* Main menu: minimal collapsed style (solo nomi categorie visibili) */
+    /* Layout desktop: sidebar + main */
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start;}
+    nav.categories{
+      background:linear-gradient(180deg,var(--card),#fff);
+      border:1px solid var(--border);
+      padding:12px;border-radius:10px;height:fit-content;
+    }
+    nav.categories h3{font-size:13px;color:var(--sea);margin:0 0 8px 0;font-weight:700}
+    .cat-list{display:flex;flex-direction:column;gap:8px}
+    .cat-btn{
+      display:flex;align-items:center;padding:10px 12px;border-radius:8px;color:var(--text);font-weight:700;border:1px solid transparent;background:transparent;cursor:pointer;
+    }
+    .cat-btn:hover{background:var(--glass);border-color:var(--border)}
+    .cat-btn[aria-selected="true"]{background:linear-gradient(90deg, rgba(11,61,91,0.04), rgba(46,139,123,0.02));border-color:rgba(11,61,91,0.06)}
+
+    /* Main: initially show only headings (collapsed). When a category is selected, only that card is visible and expanded. */
     main.menu{padding:6px 0;}
     .card{
       background:transparent;
@@ -76,8 +71,9 @@
       margin-bottom:8px;
       overflow:hidden;
       border:1px solid transparent;
+      display:block; /* default visible; JS will hide/show */
     }
-    /* Header della categoria (solo nome visibile quando chiusa) */
+    .card.hidden{display:none}
     .card .heading{
       display:flex;
       align-items:center;
@@ -98,16 +94,14 @@
     }
     .card .heading .chev{
       width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-weight:800;
-      background:transparent;border:1px solid transparent;
+      background:transparent;border:1px solid transparent;transform:rotate(0deg);transition:transform .18s ease;
     }
     .card.open .heading{background:linear-gradient(90deg, rgba(11,61,91,0.06), rgba(46,139,123,0.02));}
     .card.open .heading .chev{transform:rotate(90deg)}
 
-    /* Contenuto: nascosto finché categoria non aperta */
     .card .content{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 14px;}
     .card.open .content{padding-top:12px;max-height:2000px;transition:max-height .36s cubic-bezier(.2,.9,.3,1);}
 
-    /* Lista piatti */
     .grid-items{display:flex;flex-direction:column;gap:10px}
     .item{display:flex;justify-content:space-between;gap:12px;padding:10px;border-radius:8px;background:var(--card);border:1px solid var(--border);}
     .left{max-width:74%}
@@ -119,27 +113,33 @@
     .note{font-size:13px;color:#374151;margin-top:10px}
     .allergens{font-size:13px;color:#374151;margin-top:14px;padding-top:12px;border-top:1px dashed #eee}
 
-    /* Responsive: mobile layout and topbar visible in narrow widths or landscape phones */
+    /* Bottom fixed button "Torna alle categorie" */
+    .back-cats{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:14px;
+      background:var(--navy);
+      color:#fff;
+      padding:10px 16px;
+      border-radius:999px;
+      font-weight:800;
+      border:0;
+      cursor:pointer;
+      box-shadow:0 8px 26px rgba(11,61,91,0.12);
+      z-index:1200;
+    }
+
+    /* Responsive */
     @media (max-width:980px){
       .layout{grid-template-columns:1fr;gap:12px}
-      nav.categories{display:none} /* hide sidebar on small screens, use topbar instead */
-      .topbar{display:flex}
-    }
-
-    /* Force topbar visible on small height (landscape phones) */
-    @media (max-height:520px){
-      .topbar{display:flex}
       nav.categories{display:none}
     }
-
     @media (max-width:520px){
       header h1{font-size:20px}
       .name{font-size:15px}
       .desc{font-size:13px}
     }
-
-    /* Utility */
-    .muted{color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
@@ -152,7 +152,7 @@
       <div style="margin-left:auto" class="muted">Stile: Quanto Basta • Colori confermati</div>
     </header>
 
-    <!-- Topbar per telefoni in orizzontale / mobile -->
+    <!-- Topbar: l'utente preme qui per vedere solo la categoria selezionata -->
     <div class="topbar" id="topbar" role="tablist" aria-label="Categorie menu orizzontali">
       <button class="cat-pill" data-target="le-ostriche">Le Ostriche</button>
       <button class="cat-pill" data-target="le-nostre-selezioni">Le Nostre Selezioni</button>
@@ -169,26 +169,28 @@
     </div>
 
     <div class="layout">
-      <!-- Sidebar categorie (desktop) -->
+      <!-- Sidebar (desktop) -->
       <nav class="categories" aria-label="Categorie menu">
         <h3>Sezioni</h3>
         <div class="cat-list" role="tablist" aria-orientation="vertical">
-          <button class="cat-btn" data-target="le-ostriche" aria-expanded="false">Le Ostriche</button>
-          <button class="cat-btn" data-target="le-nostre-selezioni" aria-expanded="false">Le Nostre Selezioni</button>
-          <button class="cat-btn" data-target="i-crudi" aria-expanded="false">I Crudi</button>
-          <button class="cat-btn" data-target="innovazione-tradizione" aria-expanded="false">Innovazione e tradizione</button>
-          <button class="cat-btn" data-target="i-crostacei" aria-expanded="false">I Crostacei</button>
-          <button class="cat-btn" data-target="i-nostri-sfizi" aria-expanded="false">I nostri sfizi</button>
-          <button class="cat-btn" data-target="primi-piatti" aria-expanded="false">Primi piatti</button>
-          <button class="cat-btn" data-target="i-secondi" aria-expanded="false">I Secondi</button>
-          <button class="cat-btn" data-target="il-barbecue" aria-expanded="false">Il Barbecue</button>
-          <button class="cat-btn" data-target="i-contorni" aria-expanded="false">I Contorni</button>
-          <button class="cat-btn" data-target="dessert" aria-expanded="false">Dessert e Coccole Finali</button>
-          <button class="cat-btn" data-target="allergeni" aria-expanded="false">Allergeni</button>
+          <button class="cat-btn" data-target="le-ostriche" aria-selected="false">Le Ostriche</button>
+          <button class="cat-btn" data-target="le-nostre-selezioni" aria-selected="false">Le Nostre Selezioni</button>
+          <button class="cat-btn" data-target="i-crudi" aria-selected="false">I Crudi</button>
+          <button class="cat-btn" data-target="innovazione-tradizione" aria-selected="false">Innovazione e tradizione</button>
+          <button class="cat-btn" data-target="i-crostacei" aria-selected="false">I Crostacei</button>
+          <button class="cat-btn" data-target="i-nostri-sfizi" aria-selected="false">I nostri sfizi</button>
+          <button class="cat-btn" data-target="primi-piatti" aria-selected="false">Primi piatti</button>
+          <button class="cat-btn" data-target="i-secondi" aria-selected="false">I Secondi</button>
+          <button class="cat-btn" data-target="il-barbecue" aria-selected="false">Il Barbecue</button>
+          <button class="cat-btn" data-target="i-contorni" aria-selected="false">I Contorni</button>
+          <button class="cat-btn" data-target="dessert" aria-selected="false">Dessert e Coccole Finali</button>
+          <button class="cat-btn" data-target="allergeni" aria-selected="false">Allergeni</button>
         </div>
       </nav>
 
-      <!-- Main: ogni sezione mostra solo il nome; i piatti appaiono solo quando la categoria è aperta -->
+      <!-- Main: tutte le card esistono ma di default mostrano solo il nome.
+           Quando si seleziona una categoria (topbar o sidebar), tutte le altre card vengono nascoste
+           e la sola categoria selezionata viene mostrata espansa con i piatti. -->
       <main class="menu" id="menu-root">
         <!-- Le Ostriche -->
         <section class="card" id="le-ostriche" role="region" aria-labelledby="h-ostriche">
@@ -201,7 +203,7 @@
               <div class="item"><div class="left"><span class="name">Ostrica Regal (Irlanda – calibro 3)</span></div><div class="price">6 €</div></div>
               <div class="item"><div class="left"><span class="name">Ostrica Tarbouriech (Italia, Sacca Scardovari – calibro 4)</span></div><div class="price">8 €</div></div>
               <div class="item"><div class="left"><span class="name">Ostrica Royale David Hervet (Francia calibro 4)</span></div><div class="price">6 €</div></div>
-              <div class="item"><div class="left"><span class="name">Ostrica Bora ( italia, Sardegna calibro 3)</span></div><div class="price">6 €</div></div>
+              <div class="item"><div class="left"><span class="name">Ostrica Bora (Italia, Sardegna calibro 3)</span></div><div class="price">6 €</div></div>
             </div>
           </div>
         </section>
@@ -393,7 +395,7 @@
                 <li>8 – FRUTTA A GUSCIO E DERIVATI (mandorle, nocciole, noci comuni, noci di acagiù, noci pecan, anacardi, pistacchi)</li>
                 <li>9 – SEDANO E DERIVATI (sia in pezzi che all’interno di preparati per zuppe, salse e concentrati vegetali)</li>
                 <li>10 – SENAPE E DERIVATI (si può trovare in salse e condimenti, specie nella mostarda)</li>
-                <li>11 – SEMI DI SESAMO E DERIVATI (semi interi usati per il pane, farine che lo contengono anche in minima percentuale)</li>
+                <li>11 – SEMI DI SESAMO E DERIVATI (semi interi usati per il pane, farine che lo contengono anche minima percentuale)</li>
                 <li>12 – ANIDRIDE SOLFOROSA E SOLFITI (in concentrazioni superiori a 10 mg/kg o 10 mg/l espressi come SO2)</li>
                 <li>13 – LUPINI E DERIVATI (presenti in cibi vegan sottoforma di arrosti, salamini, farine e similari)</li>
                 <li>14 – MOLLUSCHI E DERIVATI (canestrelli, cannolicchi, capesante, cozze, ostriche, patelle, vongole, telline ecc.)</li>
@@ -406,99 +408,112 @@
     </div>
   </div>
 
+  <button class="back-cats" id="backCatsBtn" aria-hidden="false">Torna alle categorie</button>
+
   <script>
-    // Selettori
-    const cards = Array.from(document.querySelectorAll('.card'));
-    const sidebarBtns = Array.from(document.querySelectorAll('.cat-btn'));
+    const allCards = Array.from(document.querySelectorAll('.card'));
     const topPills = Array.from(document.querySelectorAll('.cat-pill'));
-    const headings = Array.from(document.querySelectorAll('.card .heading'));
+    const sidebarBtns = Array.from(document.querySelectorAll('.cat-btn'));
+    const backBtn = document.getElementById('backCatsBtn');
 
-    // Funzione per chiudere tutte le card
-    function closeAll(){
-      cards.forEach(c => {
-        c.classList.remove('open');
-        const heading = c.querySelector('.heading');
-        if(heading) heading.setAttribute('aria-expanded','false');
-      });
-      sidebarBtns.forEach(b => b.setAttribute('aria-expanded','false'));
-      topPills.forEach(p => p.classList.remove('active'));
-    }
-
-    // Apri una card per id (solo una aperta alla volta)
-    function openCard(id, focus=false){
-      const target = document.getElementById(id);
-      if(!target) return;
-      const isOpen = target.classList.contains('open');
-      closeAll();
-      if(!isOpen){
-        target.classList.add('open');
-        const heading = target.querySelector('.heading');
-        if(heading) heading.setAttribute('aria-expanded','true');
-        // sync sidebar button aria-expanded
-        const sb = sidebarBtns.find(b => b.dataset.target === id);
-        if(sb) sb.setAttribute('aria-expanded','true');
-        // sync top pill active
-        const tp = topPills.find(p => p.dataset.target === id);
-        if(tp) tp.classList.add('active');
-        // scroll into view on small screens
-        if(window.innerWidth <= 980 || window.innerHeight <= 520){
-          setTimeout(()=> target.scrollIntoView({behavior:'smooth',block:'start'}),80);
+    // Mostra solo la categoria selezionata (nasconde tutte le altre) e la espande
+    function showOnlyCategory(id){
+      allCards.forEach(card=>{
+        if(card.id === id){
+          card.classList.remove('hidden');
+          card.classList.add('open');
+          card.querySelector('.heading')?.setAttribute('aria-expanded','true');
+        } else {
+          card.classList.add('hidden');
+          card.classList.remove('open');
+          card.querySelector('.heading')?.setAttribute('aria-expanded','false');
         }
-        if(focus) target.querySelector('.heading')?.focus();
-      }
+      });
+      // sync pills and sidebar
+      topPills.forEach(p=> p.classList.toggle('active', p.dataset.target === id));
+      sidebarBtns.forEach(b=> b.setAttribute('aria-selected', b.dataset.target === id ? 'true' : 'false'));
+      // scroll to the visible card
+      const el = document.getElementById(id);
+      if(el) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 80);
     }
 
-    // Toggle card when heading clicked
-    headings.forEach(h=>{
-      h.addEventListener('click', ()=>{
-        const card = h.closest('.card');
-        const id = card.id;
-        openCard(id,true);
+    // Torna alla vista categorie: mostra tutte le categorie chiuse (solo nomi)
+    function showAllCategories(){
+      allCards.forEach(card=>{
+        card.classList.remove('hidden');
+        card.classList.remove('open');
+        card.querySelector('.heading')?.setAttribute('aria-expanded','false');
       });
-      // keyboard accessibility: Enter / Space
-      h.addEventListener('keydown', (e)=>{
+      topPills.forEach(p=> p.classList.remove('active'));
+      sidebarBtns.forEach(b=> b.setAttribute('aria-selected','false'));
+      // scroll to top of menu
+      const root = document.getElementById('menu-root');
+      if(root) root.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    // Eventi topbar
+    topPills.forEach(pill=>{
+      pill.addEventListener('click', ()=> {
+        const id = pill.dataset.target;
+        showOnlyCategory(id);
+      });
+    });
+
+    // Eventi sidebar
+    sidebarBtns.forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const id = btn.dataset.target;
+        showOnlyCategory(id);
+      });
+    });
+
+    // Eventi heading: se l'utente clicca sul nome quando è visibile, apri/chiudi solo quella card.
+    allCards.forEach(card=>{
+      const heading = card.querySelector('.heading');
+      heading?.addEventListener('click', ()=>{
+        const id = card.id;
+        // se la card è l'unica visibile e chiusa, aprila; se è aperta, chiudi e mostra tutte le categorie
+        const isOnlyVisible = allCards.filter(c => !c.classList.contains('hidden')).length === 1;
+        const isOpen = card.classList.contains('open');
+        if(isOnlyVisible){
+          if(isOpen){
+            showAllCategories();
+          } else {
+            // expand it (already only visible)
+            card.classList.add('open');
+            heading.setAttribute('aria-expanded','true');
+          }
+        } else {
+          // se non è l'unica visibile, mostra solo questa categoria
+          showOnlyCategory(id);
+        }
+      });
+      // keyboard support
+      heading?.addEventListener('keydown', (e)=>{
         if(e.key === 'Enter' || e.key === ' '){
           e.preventDefault();
-          const card = h.closest('.card');
-          const id = card.id;
-          openCard(id,true);
+          heading.click();
         }
       });
     });
 
-    // Eventi sidebar (desktop)
-    sidebarBtns.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const id = btn.dataset.target;
-        openCard(id,true);
-      });
-    });
+    // Back button
+    backBtn.addEventListener('click', showAllCategories);
 
-    // Eventi topbar (mobile/landscape)
-    topPills.forEach(pill=>{
-      pill.addEventListener('click', ()=>{
-        const id = pill.dataset.target;
-        openCard(id,true);
-        // highlight active pill
-        topPills.forEach(pp=>pp.classList.remove('active'));
-        pill.classList.add('active');
-      });
-    });
-
-    // Deep-linking: se hash presente apri la categoria corrispondente
+    // Deep-linking: se hash presente apri solo quella categoria
     (function(){
       const hash = location.hash.replace('#','');
-      if(hash){
-        setTimeout(()=> openCard(hash,true),120);
+      if(hash && document.getElementById(hash)){
+        showOnlyCategory(hash);
       } else {
-        // di default tieni tutto chiuso (richiesto)
-        closeAll();
+        // default: mostra tutte le categorie chiuse
+        showAllCategories();
       }
     })();
 
-    // Accessibilità: chiudi con ESC
+    // Accessibilità: ESC mostra tutte le categorie
     document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape') closeAll();
+      if(e.key === 'Escape') showAllCategories();
     });
   </script>
 </body>
